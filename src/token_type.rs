@@ -1,4 +1,6 @@
-#[derive(Debug)]
+use std::fmt;
+
+#[derive(Debug, Clone)]
 pub enum TokenType {
     // Single-character tokens
     LeftParen,
@@ -47,4 +49,10 @@ pub enum TokenType {
     While,
 
     Eof,
+}
+
+impl fmt::Display for TokenType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

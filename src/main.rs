@@ -1,3 +1,4 @@
+use rlox::scanner::Scanner;
 use rlox::token_type;
 use std::env;
 use std::fs::File;
@@ -41,5 +42,10 @@ fn run_prompt() {
 }
 
 fn run(source: String) {
-    println!("source: {}", source)
+    let mut scanner = Scanner::new(source);
+    let tokens = scanner.scan_tokens();
+
+    for token in tokens {
+        println!("{}", token)
+    }
 }
