@@ -92,8 +92,16 @@ impl Scanner {
             '\n' => self.line += 1,
             '"' => self.string(),
             '0'..='9' => self.number(),
+            ch if ch.is_alphabetic() => self.identifier(),
             other => panic!("unexpected char: {:?}", other),
         }
+    }
+
+    fn identifier(&mut self) {
+        while self.peek().is_alphanumeric() {
+            self.advance();
+        }
+        self.add_token(TokenType::Identifier);
     }
 
     fn number(&mut self) {
