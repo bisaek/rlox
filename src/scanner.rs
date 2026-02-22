@@ -91,8 +91,36 @@ impl Scanner {
             ' ' | '\r' | '\t' => {}
             '\n' => self.line += 1,
             '"' => self.string(),
+            '0'..'9' => self.number(),
             other => panic!("unexpected char: {:?}", other),
         }
+    }
+
+    fn number(&mut self) {
+        while self.peek().is_digit(10) {
+            println!("{:?}", self.peek());
+            self.advance();
+        }
+        //for i in '0'..'9' {
+        //    println!("{:?}", i);
+        //}
+        println!("{:?} {:?}", self.peek(), self.peek_next());
+        if self.peek() == '.' && self.peek_next().is_digit(10) {
+            self.advance();
+
+            while self.peek().is_digit(10) {
+                self.advance();
+            }
+        }
+
+        self.add_token_with_literal(
+            TokenType::Number,
+            Literal::Number(
+                self.source[self.start..self.current]
+                    .parse::<f64>()
+                    .unwrap(),
+            ),
+        );
     }
 
     fn string(&mut self) {
@@ -136,6 +164,13 @@ impl Scanner {
             return '\0';
         }
         return self.source.as_bytes()[self.current] as char;
+    }
+
+    fn peek_next(&mut self) -> char {
+        if self.current + 1 >= self.source.len() {
+            return '\0';
+        }
+        return self.source.as_bytes()[self.current + 1] as char;
     }
 
     fn add_token(&mut self, token_type: TokenType) {
