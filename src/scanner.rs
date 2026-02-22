@@ -91,7 +91,7 @@ impl Scanner {
             ' ' | '\r' | '\t' => {}
             '\n' => self.line += 1,
             '"' => self.string(),
-            '0'..'9' => self.number(),
+            '0'..='9' => self.number(),
             other => panic!("unexpected char: {:?}", other),
         }
     }
