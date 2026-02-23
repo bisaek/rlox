@@ -3,9 +3,9 @@ use std::fmt;
 
 #[derive(Clone)]
 pub struct Token {
-    token_type: TokenType,
-    lexeme: String,
-    literal: Literal,
+    pub token_type: TokenType,
+    pub lexeme: String,
+    pub literal: Literal,
     line: usize,
 }
 

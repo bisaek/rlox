@@ -127,13 +127,13 @@ impl Scanner {
 
     fn number(&mut self) {
         while self.peek().is_digit(10) {
-            println!("{:?}", self.peek());
+            //println!("{:?}", self.peek());
             self.advance();
         }
         //for i in '0'..'9' {
         //    println!("{:?}", i);
         //}
-        println!("{:?} {:?}", self.peek(), self.peek_next());
+        //println!("{:?} {:?}", self.peek(), self.peek_next());
         if self.peek() == '.' && self.peek_next().is_digit(10) {
             self.advance();
 
