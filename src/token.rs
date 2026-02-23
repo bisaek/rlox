@@ -1,3 +1,4 @@
+use crate::literal::Literal;
 use crate::token_type::TokenType;
 use std::fmt;
 
@@ -16,25 +17,6 @@ impl Token {
             lexeme,
             literal,
             line,
-        }
-    }
-}
-
-#[derive(Clone)]
-pub enum Literal {
-    Number(f64),
-    Str(String),
-    Bool(bool),
-    None,
-}
-
-impl fmt::Display for Literal {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Literal::Number(n) => write!(f, "{}", n),
-            Literal::Str(s) => write!(f, "{}", s),
-            Literal::Bool(b) => write!(f, "{}", b),
-            Literal::None => write!(f, "nil"),
         }
     }
 }

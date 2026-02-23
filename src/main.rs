@@ -1,3 +1,4 @@
+use rlox::interpreter::interpret;
 use rlox::parser::Parser;
 use rlox::scanner::Scanner;
 use rlox::token_type;
@@ -49,5 +50,5 @@ fn run(source: String) {
     let mut parser = Parser::new(tokens);
     let expression = parser.parse();
 
-    println!("expresstion: {}", expression)
+    interpret(expression);
 }

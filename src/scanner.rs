@@ -1,5 +1,6 @@
+use crate::literal::Literal;
+use crate::token::Token;
 use crate::token_type::TokenType;
-use crate::{token::*, token_type};
 
 pub struct Scanner {
     source: String,

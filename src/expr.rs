@@ -1,4 +1,5 @@
-use crate::token::{Literal, Token};
+use crate::literal::Literal;
+use crate::token::Token;
 use std::fmt;
 
 pub enum Expr {
