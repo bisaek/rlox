@@ -1,8 +1,9 @@
-use crate::{expr::Expr, literal::Literal, token::Token, token_type::TokenType};
+use crate::{expr::Expr, literal::Literal, stmt::Stmt, token::Token, token_type::TokenType};
 
-pub fn interpret(expression: Expr) {
-    let value = evaluate(Box::new(expression));
-    println!("{}", value);
+pub fn interpret(statements: Vec<Stmt>) {
+    for statement in statements {
+        execute(Box::new(statement));
+    }
 }
 
 fn evaluate(expr: Box<Expr>) -> Literal {
@@ -39,6 +40,18 @@ fn evaluate(expr: Box<Expr>) -> Literal {
                 TokenType::Plus => left + right,
                 _ => Literal::None,
             }
+        }
+    }
+}
+
+fn execute(stmt: Box<Stmt>) {
+    match *stmt {
+        Stmt::Print { expression } => {
+            let value = evaluate(expression);
+            println!("{}", value);
+        }
+        Stmt::Expression { expression } => {
+            evaluate(expression);
         }
     }
 }

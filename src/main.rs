@@ -48,7 +48,7 @@ fn run(source: String) {
     let tokens = scanner.scan_tokens();
 
     let mut parser = Parser::new(tokens);
-    let expression = parser.parse();
+    let statements = parser.parse();
 
-    interpret(expression);
+    interpret(statements);
 }

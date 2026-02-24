@@ -2,6 +2,7 @@ use std::ops::Mul;
 
 use crate::expr::Expr;
 use crate::literal::Literal;
+use crate::stmt::Stmt;
 use crate::token::Token;
 use crate::token_type::TokenType;
 
@@ -15,8 +16,34 @@ impl Parser {
         Self { tokens, current: 0 }
     }
 
-    pub fn parse(&mut self) -> Expr {
-        self.expresstion()
+    pub fn parse(&mut self) -> Vec<Stmt> {
+        let mut statements: Vec<Stmt> = Vec::new();
+        while !self.is_at_end() {
+            statements.push(self.statement());
+        }
+
+        statements
+    }
+    fn statement(&mut self) -> Stmt {
+        if self.match_token(vec![TokenType::Print]) {
+            return self.print_statement();
+        }
+        self.expression_statement()
+    }
+
+    fn print_statement(&mut self) -> Stmt {
+        let value = self.expresstion();
+        self.consume(TokenType::Semicolon, "Expect ';' after value.");
+        Stmt::Print {
+            expression: Box::new(value),
+        }
+    }
+    fn expression_statement(&mut self) -> Stmt {
+        let expr = self.expresstion();
+        self.consume(TokenType::Semicolon, "Expect ';' after expression");
+        Stmt::Expression {
+            expression: Box::new(expr),
+        }
     }
 
     fn expresstion(&mut self) -> Expr {
