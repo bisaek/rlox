@@ -1,12 +1,40 @@
+use std::cmp::Ordering;
 use std::fmt;
 use std::ops::{Add, Div, Mul, Neg, Not, Sub};
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum Literal {
     Number(f64),
     Str(String),
     Bool(bool),
     None,
+}
+
+impl Literal {
+    pub fn greater(self, other: Self) -> Self {
+        match (self, other) {
+            (Literal::Number(a), Literal::Number(b)) => Literal::Bool(a > b),
+            (left, right) => panic!("cannot apply '>'"),
+        }
+    }
+    pub fn greater_or_equal(self, other: Self) -> Self {
+        match (self, other) {
+            (Literal::Number(a), Literal::Number(b)) => Literal::Bool(a >= b),
+            (left, right) => panic!("Cant apply '>='"),
+        }
+    }
+    pub fn less(self, other: Self) -> Self {
+        match (self, other) {
+            (Literal::Number(a), Literal::Number(b)) => Literal::Bool(a < b),
+            (_, _) => panic!("Cant apply '<'"),
+        }
+    }
+    pub fn less_or_equal(self, other: Self) -> Self {
+        match (self, other) {
+            (Literal::Number(a), Literal::Number(b)) => Literal::Bool(a <= b),
+            (_, _) => panic!("Cant apply '<='"),
+        }
+    }
 }
 
 impl fmt::Display for Literal {

@@ -27,6 +27,12 @@ fn evaluate(expr: Box<Expr>) -> Literal {
             let right = evaluate(right);
 
             match operator.token_type {
+                TokenType::Greater => left.greater(right),
+                TokenType::GreaterEqual => left.greater_or_equal(right),
+                TokenType::Less => left.less(right),
+                TokenType::LessEqual => left.less_or_equal(right),
+                TokenType::BangEqual => Literal::Bool(left != right),
+                TokenType::EqualEqual => Literal::Bool(left == right),
                 TokenType::Minus => left - right,
                 TokenType::Slash => left / right,
                 TokenType::Star => left * right,
