@@ -80,6 +80,15 @@ impl Interpreter {
                     Environment::new(Some(Box::new(self.enviroment.clone()))),
                 );
             }
+            Stmt::If {
+                condition,
+                then_branch,
+                else_branch,
+            } => match (self.evaluate(condition), else_branch) {
+                (Literal::Bool(true), _) => self.execute(then_branch),
+                (Literal::Bool(false), Some(else_branch)) => self.execute(else_branch),
+                _ => panic!("test"),
+            },
         }
     }
     fn execute_block(&mut self, statements: Vec<Box<Stmt>>, environment: Environment) {
