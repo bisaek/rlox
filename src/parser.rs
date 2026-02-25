@@ -19,10 +19,32 @@ impl Parser {
     pub fn parse(&mut self) -> Vec<Stmt> {
         let mut statements: Vec<Stmt> = Vec::new();
         while !self.is_at_end() {
-            statements.push(self.statement());
+            statements.push(self.declaration());
         }
 
         statements
+    }
+    fn declaration(&mut self) -> Stmt {
+        if self.match_token(vec![TokenType::Var]) {
+            return self.var_declaration();
+        }
+        self.statement()
+    }
+    fn var_declaration(&mut self) -> Stmt {
+        let name = self.consume(TokenType::Identifier, "Expect variable name");
+
+        let mut initializer = Box::new(Expr::Literal {
+            value: Literal::None,
+        });
+        if self.match_token(vec![TokenType::Equal]) {
+            initializer = Box::new(self.expresstion());
+        }
+        self.consume(
+            TokenType::Semicolon,
+            "Expect ';' after variable declaration",
+        );
+
+        Stmt::Var { name, initializer }
     }
     fn statement(&mut self) -> Stmt {
         if self.match_token(vec![TokenType::Print]) {
@@ -152,6 +174,12 @@ impl Parser {
             };
         }
 
+        if self.match_token(vec![TokenType::Identifier]) {
+            return Expr::Variable {
+                name: self.previous(),
+            };
+        }
+
         if self.match_token(vec![TokenType::LeftParen]) {
             let expr = self.expresstion();
             self.consume(TokenType::RightParen, "Expect ')' after expression");
@@ -160,7 +188,7 @@ impl Parser {
             };
         }
 
-        panic!("paaaaaaaaaaaaaaaaaaaanic");
+        panic!("paaaaaaaaaaaaaaaaaaaanic: {}", self.peek());
     }
 
     fn match_token(&mut self, token_types: Vec<TokenType>) -> bool {

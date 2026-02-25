@@ -1,6 +1,6 @@
 use crate::literal::Literal;
 use crate::token::Token;
-use std::fmt;
+use std::fmt::{self, write};
 
 pub enum Expr {
     Binary {
@@ -17,6 +17,9 @@ pub enum Expr {
     Unary {
         operator: Token,
         right: Box<Expr>,
+    },
+    Variable {
+        name: Token,
     },
 }
 
@@ -44,6 +47,7 @@ impl fmt::Display for Expr {
                 // Token formatteres via Display
                 write!(f, "({} {} {})", operator.lexeme, left, right)
             }
+            Expr::Variable { name } => write!(f, "(var {})", name),
         }
     }
 }
