@@ -50,6 +50,11 @@ impl Parser {
         if self.match_token(vec![TokenType::Print]) {
             return self.print_statement();
         }
+        if self.match_token(vec![TokenType::LeftBrace]) {
+            return Stmt::Block {
+                statements: self.block(),
+            };
+        }
         self.expression_statement()
     }
 
@@ -66,6 +71,16 @@ impl Parser {
         Stmt::Expression {
             expression: Box::new(expr),
         }
+    }
+    fn block(&mut self) -> Vec<Box<Stmt>> {
+        let mut statements: Vec<Box<Stmt>> = Vec::new();
+
+        while !self.check(TokenType::RightBrace) && !self.is_at_end() {
+            statements.push(Box::new(self.declaration()));
+        }
+
+        self.consume(TokenType::RightBrace, "Expect '}' after block");
+        statements
     }
     fn assignment(&mut self) -> Expr {
         let expr = self.equality();

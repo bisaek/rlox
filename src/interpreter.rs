@@ -5,7 +5,7 @@ use crate::{
 
 pub fn interpret(statements: Vec<Stmt>) {
     let mut interpreter = Interpreter {
-        enviroment: Environment::new(),
+        enviroment: Environment::new(None),
     };
     for statement in statements {
         interpreter.execute(Box::new(statement));
@@ -74,6 +74,21 @@ impl Interpreter {
                 let value = self.evaluate(initializer);
                 self.enviroment.define(name.lexeme, value);
             }
+            Stmt::Block { statements } => {
+                self.execute_block(
+                    statements,
+                    Environment::new(Some(Box::new(self.enviroment.clone()))),
+                );
+            }
         }
+    }
+    fn execute_block(&mut self, statements: Vec<Box<Stmt>>, environment: Environment) {
+        let previous = self.enviroment.clone();
+        self.enviroment = environment;
+
+        for statement in statements {
+            self.execute(statement);
+        }
+        self.enviroment = previous;
     }
 }
