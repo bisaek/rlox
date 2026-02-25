@@ -67,9 +67,23 @@ impl Parser {
             expression: Box::new(expr),
         }
     }
+    fn assignment(&mut self) -> Expr {
+        let expr = self.equality();
+
+        if self.match_token(vec![TokenType::Equal]) {
+            let equals = self.previous();
+            let value = Box::new(self.assignment());
+
+            match expr {
+                Expr::Variable { name } => return Expr::Assign { name, value },
+                _ => panic!("{} Invalid assignment targer", equals),
+            }
+        }
+        expr
+    }
 
     fn expresstion(&mut self) -> Expr {
-        self.equality()
+        self.assignment()
     }
     fn equality(&mut self) -> Expr {
         let mut expr = self.comparison();

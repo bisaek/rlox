@@ -23,4 +23,11 @@ impl Environment {
             None => panic!("Undefined variable '{}'.", name.lexeme),
         };
     }
+    pub fn assign(&mut self, name: Token, value: Literal) {
+        if self.values.contains_key(&name.lexeme) {
+            self.values.insert(name.lexeme, value);
+        } else {
+            panic!("{} Undifined variable '{}'.", name, name.lexeme)
+        }
+    }
 }

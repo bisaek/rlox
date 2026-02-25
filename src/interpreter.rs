@@ -53,6 +53,11 @@ impl Interpreter {
                 }
             }
             Expr::Variable { name } => self.enviroment.get(name),
+            Expr::Assign { name, value } => {
+                let value = self.evaluate(value);
+                self.enviroment.assign(name, value.clone());
+                value
+            }
         }
     }
 
