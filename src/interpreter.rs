@@ -103,10 +103,10 @@ impl Interpreter {
                 condition,
                 then_branch,
                 else_branch,
-            } => match (self.evaluate(condition), else_branch) {
-                (Literal::Bool(true), _) => self.execute(then_branch),
-                (Literal::Bool(false), Some(else_branch)) => self.execute(else_branch),
-                _ => panic!("test"),
+            } => match (self.evaluate(condition).is_truthy(), else_branch) {
+                (true, _) => self.execute(then_branch),
+                (false, Some(else_branch)) => self.execute(else_branch),
+                _ => {}
             },
         }
     }

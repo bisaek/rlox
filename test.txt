@@ -1,4 +1,4 @@
-var a = false;
+var a = "hello";
 
-if(a) print "det er sandt";
-else print "det er falsk";
+if(!a) print "det er sandt";
+//else print "det er falsk";
