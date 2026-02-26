@@ -103,7 +103,7 @@ impl Parser {
         statements
     }
     fn assignment(&mut self) -> Expr {
-        let expr = self.equality();
+        let expr = self.or();
 
         if self.match_token(vec![TokenType::Equal]) {
             let equals = self.previous();
@@ -114,6 +114,36 @@ impl Parser {
                 _ => panic!("{} Invalid assignment targer", equals),
             }
         }
+        expr
+    }
+    fn or(&mut self) -> Expr {
+        let mut expr = self.and();
+
+        while self.match_token(vec![TokenType::Or]) {
+            let operator = self.previous();
+            let right = Box::new(self.and());
+            expr = Expr::Logical {
+                left: Box::new(expr),
+                operator,
+                right,
+            }
+        }
+
+        expr
+    }
+    fn and(&mut self) -> Expr {
+        let mut expr = self.equality();
+
+        while self.match_token(vec![TokenType::And]) {
+            let operator = self.previous();
+            let right = Box::new(self.equality());
+            expr = Expr::Logical {
+                left: Box::new(expr),
+                operator,
+                right,
+            }
+        }
+
         expr
     }
 

@@ -58,6 +58,25 @@ impl Interpreter {
                 self.enviroment.assign(name, value.clone());
                 value
             }
+            Expr::Logical {
+                left,
+                operator,
+                right,
+            } => {
+                let left = self.evaluate(left);
+
+                if operator.token_type == TokenType::Or {
+                    if left.clone().is_truthy() {
+                        return left;
+                    }
+                } else {
+                    if !left.clone().is_truthy() {
+                        return left;
+                    }
+                }
+
+                self.evaluate(right)
+            }
         }
     }
 

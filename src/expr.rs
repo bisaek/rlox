@@ -14,6 +14,11 @@ pub enum Expr {
     Literal {
         value: Literal,
     },
+    Logical {
+        left: Box<Expr>,
+        operator: Token,
+        right: Box<Expr>,
+    },
     Unary {
         operator: Token,
         right: Box<Expr>,
@@ -53,6 +58,13 @@ impl fmt::Display for Expr {
             }
             Expr::Variable { name } => write!(f, "(var {})", name),
             Expr::Assign { name, value } => write!(f, "{} = {}", name, value),
+            Expr::Logical {
+                left,
+                operator,
+                right,
+            } => {
+                write!(f, "({} {} {})", operator.lexeme, left, right)
+            }
         }
     }
 }

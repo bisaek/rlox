@@ -35,6 +35,13 @@ impl Literal {
             (_, _) => panic!("Cant apply '<='"),
         }
     }
+    pub fn is_truthy(self) -> bool {
+        match self {
+            Literal::None => false,
+            Literal::Bool(b) => b,
+            Literal::Str(_) | Literal::Number(_) => true,
+        }
+    }
 }
 
 impl fmt::Display for Literal {
