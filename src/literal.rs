@@ -73,9 +73,9 @@ impl Not for Literal {
 
     fn not(self) -> Self::Output {
         match self {
-            Literal::None => Literal::Bool(false),
+            Literal::None => Literal::Bool(true),
             Literal::Bool(b) => Literal::Bool(!b),
-            Literal::Str(_) | Literal::Number(_) => Literal::Bool(true),
+            Literal::Str(_) | Literal::Number(_) => Literal::Bool(false),
         }
     }
 }
