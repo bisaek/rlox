@@ -1,5 +1,6 @@
 use crate::{expr::Expr, token::Token};
 
+#[derive(Clone)]
 pub enum Stmt {
     Expression {
         expression: Box<Expr>,
@@ -18,5 +19,9 @@ pub enum Stmt {
         condition: Box<Expr>,
         then_branch: Box<Stmt>,
         else_branch: Option<Box<Stmt>>,
+    },
+    While {
+        condition: Box<Expr>,
+        body: Box<Stmt>,
     },
 }

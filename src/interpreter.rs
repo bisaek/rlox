@@ -108,15 +108,19 @@ impl Interpreter {
                 (false, Some(else_branch)) => self.execute(else_branch),
                 _ => {}
             },
+            Stmt::While { condition, body } => {
+                while self.evaluate(condition.clone()).is_truthy() {
+                    self.execute(body.clone());
+                }
+            }
         }
     }
     fn execute_block(&mut self, statements: Vec<Box<Stmt>>, environment: Environment) {
-        let previous = self.enviroment.clone();
         self.enviroment = environment;
 
         for statement in statements {
             self.execute(statement);
         }
-        self.enviroment = previous;
+        self.enviroment = self.enviroment.enclosing.as_deref().unwrap().clone();
     }
 }

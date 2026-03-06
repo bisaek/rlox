@@ -1,4 +1,5 @@
-var a = "hello";
-
-if(!a) print "det er sandt";
-//else print "det er falsk";
+var i = 0;
+while(i<5){
+  print i;
+  i = i + 1;
+}

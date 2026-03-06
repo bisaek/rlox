@@ -2,10 +2,10 @@ use std::collections::HashMap;
 
 use crate::{literal::Literal, token::Token};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Environment {
     values: HashMap<String, Literal>,
-    enclosing: Option<Box<Environment>>,
+    pub enclosing: Option<Box<Environment>>,
 }
 
 impl Environment {
@@ -33,6 +33,7 @@ impl Environment {
             self.enclosing.as_deref_mut(),
         ) {
             (true, _) => {
+                //panic!("dette er en fejl");
                 self.values.insert(name.lexeme, value);
             }
             (false, Some(e)) => {
