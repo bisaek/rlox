@@ -47,6 +47,9 @@ impl Parser {
         Stmt::Var { name, initializer }
     }
     fn statement(&mut self) -> Stmt {
+        if self.match_token(vec![TokenType::For]) {
+            return self.for_statement();
+        }
         if self.match_token(vec![TokenType::If]) {
             return self.if_statement();
         }
@@ -62,6 +65,55 @@ impl Parser {
             };
         }
         self.expression_statement()
+    }
+    fn for_statement(&mut self) -> Stmt {
+        self.consume(TokenType::LeftParen, "Expect '(' after 'for'.");
+
+        let mut initializer: Option<Stmt> = None;
+        if self.match_token(vec![TokenType::Var]) {
+            initializer = Some(self.var_declaration());
+        } else if !self.match_token(vec![TokenType::Semicolon]) {
+            initializer = Some(self.expression_statement());
+        }
+
+        let mut condition: Expr = Expr::Literal {
+            value: Literal::Bool(true),
+        };
+        if !self.check(TokenType::Semicolon) {
+            condition = self.expresstion();
+        }
+        self.consume(TokenType::Semicolon, "Expect ';' after loop condition");
+
+        let mut increment: Option<Expr> = None;
+        if !self.check(TokenType::RightParen) {
+            increment = Some(self.expresstion());
+        }
+        self.consume(TokenType::RightParen, "Expect ')' after for clauses.");
+        let mut body = self.statement();
+
+        increment.map(|increment| {
+            body = Stmt::Block {
+                statements: vec![
+                    Box::new(body.clone()),
+                    Box::new(Stmt::Expression {
+                        expression: Box::new(increment),
+                    }),
+                ],
+            };
+        });
+
+        body = Stmt::While {
+            condition: Box::new(condition),
+            body: Box::new(body),
+        };
+
+        initializer.map(|initializer| {
+            body = Stmt::Block {
+                statements: vec![Box::new(initializer), Box::new(body.clone())],
+            }
+        });
+
+        body
     }
     fn while_statement(&mut self) -> Stmt {
         self.consume(TokenType::LeftParen, "Expect '(' after 'while'");
