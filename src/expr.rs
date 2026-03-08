@@ -2,7 +2,7 @@ use crate::literal::Literal;
 use crate::token::Token;
 use std::fmt::{self, write};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Expr {
     Binary {
         left: Box<Expr>,

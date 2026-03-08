@@ -2,7 +2,7 @@ use crate::literal::Literal;
 use crate::token_type::TokenType;
 use std::fmt;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Token {
     pub token_type: TokenType,
     pub lexeme: String,

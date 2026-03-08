@@ -1,4 +1,5 @@
 use std::ops::Mul;
+use std::vec;
 
 use crate::expr::Expr;
 use crate::literal::Literal;
@@ -25,6 +26,9 @@ impl Parser {
         statements
     }
     fn declaration(&mut self) -> Stmt {
+        if self.match_token(vec![TokenType::Fun]) {
+            return self.function("function");
+        }
         if self.match_token(vec![TokenType::Var]) {
             return self.var_declaration();
         }
@@ -153,6 +157,39 @@ impl Parser {
         self.consume(TokenType::Semicolon, "Expect ';' after expression");
         Stmt::Expression {
             expression: Box::new(expr),
+        }
+    }
+    fn function(&mut self, kind: &str) -> Stmt {
+        let name = self.consume(TokenType::Identifier, &format!("Expect {} name", kind));
+        self.consume(
+            TokenType::LeftParen,
+            &format!("Expect '(' after {} name", kind),
+        );
+        let mut parameters: Vec<Token> = vec![];
+        if !self.check(TokenType::RightParen) {
+            loop {
+                if parameters.len() >= 255 {
+                    panic!("{} Can't have more than 255 parameters.", self.peek());
+                }
+
+                parameters.push(self.consume(TokenType::Identifier, "Expect parameter name"));
+
+                if !self.match_token(vec![TokenType::Comma]) {
+                    break;
+                }
+            }
+        }
+        self.consume(TokenType::RightParen, "Expect ')' after parameters.");
+
+        self.consume(
+            TokenType::LeftBrace,
+            &format!("Expect '{{' before {} body.", kind),
+        );
+        let body = self.block();
+        Stmt::Function {
+            name,
+            params: parameters,
+            body,
         }
     }
     fn block(&mut self) -> Vec<Box<Stmt>> {

@@ -1,8 +1,8 @@
 use std::rc::Rc;
 
 use crate::{
-    environment::Environment, expr::Expr, literal::Literal, native_functions, stmt::Stmt,
-    token::Token, token_type::TokenType,
+    environment::Environment, expr::Expr, function::Function, literal::Literal, native_functions,
+    stmt::Stmt, token::Token, token_type::TokenType,
 };
 
 pub fn interpret(statements: Vec<Stmt>) {
@@ -25,7 +25,7 @@ pub fn interpret(statements: Vec<Stmt>) {
 
 pub struct Interpreter {
     enviroment: Environment,
-    globals: Environment,
+    pub globals: Environment,
 }
 
 impl Interpreter {
@@ -144,14 +144,25 @@ impl Interpreter {
                     self.execute(body.clone());
                 }
             }
+            Stmt::Function { name, params, body } => {
+                let function = Function {
+                    name: name.clone(),
+                    params,
+                    body,
+                };
+                self.enviroment
+                    .define(name.lexeme, Literal::Callable(Rc::new(function)));
+            }
         }
     }
-    fn execute_block(&mut self, statements: Vec<Box<Stmt>>, environment: Environment) {
+    pub fn execute_block(&mut self, statements: Vec<Box<Stmt>>, environment: Environment) {
         self.enviroment = environment;
 
         for statement in statements {
             self.execute(statement);
         }
-        self.enviroment = self.enviroment.enclosing.as_deref().unwrap().clone();
+        self.enviroment.enclosing.clone().map(|e| {
+            self.enviroment = *e;
+        });
     }
 }

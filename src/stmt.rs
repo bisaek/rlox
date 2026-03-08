@@ -1,6 +1,6 @@
 use crate::{expr::Expr, token::Token};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Stmt {
     Expression {
         expression: Box<Expr>,
@@ -23,5 +23,10 @@ pub enum Stmt {
     While {
         condition: Box<Expr>,
         body: Box<Stmt>,
+    },
+    Function {
+        name: Token,
+        params: Vec<Token>,
+        body: Vec<Box<Stmt>>,
     },
 }

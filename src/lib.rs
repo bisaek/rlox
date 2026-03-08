@@ -1,6 +1,7 @@
 pub mod callable;
 pub mod environment;
 pub mod expr;
+pub mod function;
 pub mod interpreter;
 pub mod literal;
 pub mod native_functions;
