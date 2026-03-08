@@ -1,13 +1,17 @@
+use crate::callable::Callable;
 use std::cmp::Ordering;
-use std::fmt;
+use std::fmt::write;
 use std::ops::{Add, Div, Mul, Neg, Not, Sub};
+use std::rc::Rc;
+use std::{fmt, panic};
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, Debug)]
 pub enum Literal {
     Number(f64),
     Str(String),
     Bool(bool),
     None,
+    Callable(Rc<dyn Callable>),
 }
 
 impl Literal {
@@ -39,7 +43,7 @@ impl Literal {
         match self {
             Literal::None => false,
             Literal::Bool(b) => b,
-            Literal::Str(_) | Literal::Number(_) => true,
+            _ => true,
         }
     }
 }
@@ -51,6 +55,7 @@ impl fmt::Display for Literal {
             Literal::Str(s) => write!(f, "{}", s),
             Literal::Bool(b) => write!(f, "{}", b),
             Literal::None => write!(f, "nil"),
+            Literal::Callable(_) => write!(f, "callable"),
         }
     }
 }
@@ -64,6 +69,7 @@ impl Neg for Literal {
             Literal::Bool(b) => Literal::Bool(!b),
             Literal::Str(s) => Literal::Str(s),
             Literal::Number(f) => Literal::Number(-f),
+            Literal::Callable(_) => panic!("callables doesn't have a neg"),
         }
     }
 }
@@ -75,7 +81,7 @@ impl Not for Literal {
         match self {
             Literal::None => Literal::Bool(true),
             Literal::Bool(b) => Literal::Bool(!b),
-            Literal::Str(_) | Literal::Number(_) => Literal::Bool(false),
+            _ => Literal::Bool(false),
         }
     }
 }
@@ -91,9 +97,11 @@ impl Sub for Literal {
                 Literal::None => panic!("Cant subtract with nil"),
                 Literal::Str(_) => panic!("Cant subtract with string"),
                 Literal::Bool(_) => panic!("Cant subtract with bool"),
+                Literal::Callable(_) => panic!("Cant subtract with callable"),
             },
             Literal::Bool(_) => panic!("Cant subtract with bool"),
             Literal::Str(_) => panic!("Cant subtract with string"),
+            Literal::Callable(_) => panic!("Cant subtract with callable"),
         }
     }
 }
@@ -109,14 +117,17 @@ impl Add for Literal {
                 Literal::None => panic!("Cant add with nil"),
                 Literal::Str(_) => panic!("Cant add a string to a number"),
                 Literal::Bool(_) => panic!("Cant add with bool"),
+                Literal::Callable(_) => panic!("Cant add with callable"),
             },
             Literal::Str(s) => match other {
                 Literal::Number(_) => panic!("Cant add a number to a string"),
                 Literal::None => panic!("Cant add with nil"),
                 Literal::Str(other_s) => Literal::Str(s + &other_s),
                 Literal::Bool(_) => panic!("Cant add with bool"),
+                Literal::Callable(_) => panic!("Cant add with callable"),
             },
             Literal::Bool(_) => panic!("Cant add with bool"),
+            Literal::Callable(_) => panic!("Cant add with callable"),
         }
     }
 }
@@ -132,9 +143,11 @@ impl Mul for Literal {
                 Literal::None => panic!("Cant multiply with nil"),
                 Literal::Bool(_) => panic!("Cant multiply with bool"),
                 Literal::Str(_) => panic!("Cant multiply with string"),
+                Literal::Callable(_) => panic!("Cant multiply with callable"),
             },
             Literal::Str(_) => panic!("Cant multiply with string"),
             Literal::Bool(_) => panic!("Cant multiply with bool"),
+            Literal::Callable(_) => panic!("Cant multiply with callable"),
         }
     }
 }
@@ -152,7 +165,22 @@ impl Div for Literal {
                 Literal::None => panic!("Cant divide with nil"),
                 Literal::Str(_) => panic!("Cant divide with string"),
                 Literal::Bool(_) => panic!("Cant divide with bool"),
+                Literal::Callable(_) => panic!("Cant divede with callable"),
             },
+            Literal::Callable(_) => panic!("Cant divide with callable"),
+        }
+    }
+}
+
+impl PartialEq for Literal {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Literal::Number(a), Literal::Number(b)) => a == b,
+            (Literal::Str(a), Literal::Str(b)) => a == b,
+            (Literal::Bool(a), Literal::Bool(b)) => a == b,
+            (Literal::None, Literal::None) => true,
+            (Literal::Callable(_), Literal::Callable(_)) => false,
+            _ => false,
         }
     }
 }

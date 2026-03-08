@@ -9,6 +9,11 @@ pub enum Expr {
         operator: Token,
         right: Box<Expr>,
     },
+    Call {
+        callee: Box<Expr>,
+        paren: Token,
+        arguments: Vec<Box<Expr>>,
+    },
     Grouping {
         expresstion: Box<Expr>,
     },
@@ -65,6 +70,22 @@ impl fmt::Display for Expr {
                 right,
             } => {
                 write!(f, "({} {} {})", operator.lexeme, left, right)
+            }
+            Expr::Call {
+                callee,
+                paren: _,
+                arguments,
+            } => {
+                write!(
+                    f,
+                    "{}({:?})",
+                    callee,
+                    arguments
+                        .iter()
+                        .map(|arg| format!("{}", arg))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                )
             }
         }
     }

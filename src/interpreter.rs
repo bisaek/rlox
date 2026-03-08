@@ -1,19 +1,31 @@
+use std::rc::Rc;
+
 use crate::{
-    environment::Environment, expr::Expr, literal::Literal, stmt::Stmt, token::Token,
-    token_type::TokenType,
+    environment::Environment, expr::Expr, literal::Literal, native_functions, stmt::Stmt,
+    token::Token, token_type::TokenType,
 };
 
 pub fn interpret(statements: Vec<Stmt>) {
+    let mut globals = Environment::new(None);
+
+    globals.define(
+        "two".to_string(),
+        Literal::Callable(Rc::new(native_functions::Two)),
+    );
+
     let mut interpreter = Interpreter {
-        enviroment: Environment::new(None),
+        globals: globals.clone(),
+        enviroment: globals,
     };
+
     for statement in statements {
         interpreter.execute(Box::new(statement));
     }
 }
 
-struct Interpreter {
+pub struct Interpreter {
     enviroment: Environment,
+    globals: Environment,
 }
 
 impl Interpreter {
@@ -76,6 +88,25 @@ impl Interpreter {
                 }
 
                 self.evaluate(right)
+            }
+            Expr::Call {
+                callee,
+                paren,
+                arguments,
+            } => {
+                let calle = self.evaluate(callee);
+
+                let arguments = arguments
+                    .iter()
+                    .map(|argument| self.evaluate(argument.clone()))
+                    .collect();
+
+                let function = match calle {
+                    Literal::Callable(c) => c,
+                    _ => panic!("Can only call functions and classes."),
+                };
+
+                function.call(self, arguments)
             }
         }
     }
