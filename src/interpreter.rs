@@ -13,6 +13,11 @@ pub fn interpret(statements: Vec<Stmt>) {
         Literal::Callable(Rc::new(native_functions::Two)),
     );
 
+    globals.define(
+        "tcp".to_string(),
+        Literal::Callable(Rc::new(native_functions::Tcp)),
+    );
+
     let mut interpreter = Interpreter {
         globals: globals.clone(),
         enviroment: globals,
